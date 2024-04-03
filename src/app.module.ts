@@ -18,7 +18,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       entities: [],
       synchronize: true,
     }),
-    UserModule],
+    UserModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
