@@ -10,8 +10,8 @@ export class UserController {
   getUser(@Param() params: any): string {
     return this.userService.getUser(params.id);
   }
-  @Post('create')
+  @Post('send-otp')
   createUser(@Body() createUserReq: CreateUserDto): any {
-    return createUserReq;
+    return this.userService.sendOTP(createUserReq);
   }
 }
