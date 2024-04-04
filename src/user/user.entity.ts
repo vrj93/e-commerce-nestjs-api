@@ -16,6 +16,8 @@ export class User {
   is_phone: boolean;
   @Column({ default: false })
   is_email: boolean;
+  @Column({ type: 'int', nullable: true })
+  otp: number;
   @CreateDateColumn()
   createdAt: Date;
   @UpdateDateColumn()
