@@ -16,7 +16,7 @@ export class UserService {
     return `This is user ${userId}`;
   }
   sendOTP(req: any): any {
-    const accountSid: string = process.env.TWILIO_ACCOUNT_SID;;
+    const accountSid: string = process.env.TWILIO_ACCOUNT_SID;
     const authToken: string = process.env.TWILIO_AUTH_TOKEN;
 
     const client: twilio.Twilio = twilio(accountSid, authToken);
@@ -74,7 +74,7 @@ export class UserService {
       };
     }
 
-    let res = {};
+    let res: any;
 
     if (reqOTP == user.otp) {
       if (phone) {
