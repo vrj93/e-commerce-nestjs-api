@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import * as twilio from 'twilio';
+import encrypt from './utils/encryption';
+import decrypt from './utils/decryption';
 
 @Injectable()
 export class UserService {
@@ -34,6 +36,13 @@ export class UserService {
 
         if (message.sid) {
           req.otp = code;
+
+          const password = req.password;
+          delete req.password;
+          const encryptObj = await encrypt(password);
+          console.log(encryptObj);
+          req.password = encryptObj.password;
+          req.iv_code = encryptObj.iv_code;
           await this.userRepository.upsert(req, ['phone']);
           const res: object = {
             id: req.id,
@@ -42,7 +51,7 @@ export class UserService {
           };
           resolve(res); // Return phone number on success
         } else {
-          reject(new Error("Failed to send OTP message"));
+          reject(new Error('Failed to send OTP message'));
         }
       } catch (error) {
         reject(error);
@@ -69,24 +78,41 @@ export class UserService {
 
     if (reqOTP == user.otp) {
       if (phone) {
-        await this.userRepository.update({ id }, {is_phone: true});
+        await this.userRepository.update({ id }, { is_phone: true });
       } else if (email) {
-        await this.userRepository.update({ id }, {is_email: true});
+        await this.userRepository.update({ id }, { is_email: true });
       }
 
       res = {
         flag: true,
         status: HttpStatus.OK,
         msg: 'Verified successfully!',
-      }
+      };
     } else {
       res = {
         flag: false,
         status: HttpStatus.BAD_REQUEST,
         msg: 'Verification failed!',
-      }
+      };
     }
 
     return res;
+  }
+  async login(req: any): Promise<any> {
+    let user: any;
+    const reqPassword = req.password;
+
+    if (req.phone) {
+      user = await this.userRepository.findOneBy({ phone: req.phone });
+    } else if (req.email) {
+      user = await this.userRepository.findOneBy({ email: req.email });
+    }
+    const password = (await decrypt(user.password, user.iv_code)).toString();
+
+    if (reqPassword === password) {
+      return 'User is authenticated';
+    } else {
+      return 'Wrong Credentials!';
+    }
   }
 }

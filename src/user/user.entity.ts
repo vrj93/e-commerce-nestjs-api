@@ -10,14 +10,16 @@ export class User {
   phone: string;
   @Column({ unique: true, nullable: true })
   email: string;
-  @Column()
-  password: string;
+  @Column('blob')
+  password: Buffer;
   @Column({ default: false })
   is_phone: boolean;
   @Column({ default: false })
   is_email: boolean;
   @Column({ type: 'int', nullable: true })
   otp: number;
+  @Column('blob')
+  iv_code: Buffer;
   @CreateDateColumn()
   createdAt: Date;
   @UpdateDateColumn()
