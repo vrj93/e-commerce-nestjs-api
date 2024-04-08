@@ -1,16 +1,18 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import * as twilio from 'twilio';
 import encrypt from './utils/encryption';
 import decrypt from './utils/decryption';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private jwtService: JwtService,
   ) {}
   getUser(userId: any): string {
     return `This is user ${userId}`;
@@ -103,16 +105,45 @@ export class UserService {
     const reqPassword = req.password;
 
     if (req.phone) {
-      user = await this.userRepository.findOneBy({ phone: req.phone });
+      user = await this.userRepository.findOneBy({
+        phone: req.phone,
+        is_phone: true,
+      });
     } else if (req.email) {
-      user = await this.userRepository.findOneBy({ email: req.email });
+      user = await this.userRepository.findOneBy({
+        email: req.email,
+        is_email: true,
+      });
     }
+
+    if (!user) {
+      return {
+        flag: false,
+        status: HttpStatus.BAD_REQUEST,
+        msg: 'User is not verified',
+      };
+    }
+
     const password = (await decrypt(user.password, user.iv_code)).toString();
 
-    if (reqPassword === password) {
-      return 'User is authenticated';
-    } else {
-      return 'Wrong Credentials!';
+    if (reqPassword !== password) {
+      throw new UnauthorizedException();
     }
+
+    let payload: any;
+    if (req.phone) {
+      payload = { sub: user.id, username: user.phone };
+    } else if (req.email) {
+      payload = { sub: user.id, username: user.email };
+    }
+
+    const access_token: string = await this.jwtService.signAsync(payload);
+
+    return {
+      flag: true,
+      status: HttpStatus.OK,
+      access_token: access_token,
+      msg: 'User is authenticated',
+    };
   }
 }
