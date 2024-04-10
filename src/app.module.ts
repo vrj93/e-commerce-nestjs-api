@@ -4,7 +4,10 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user/user.entity';
+import { User } from './entity/user.entity';
+import { ProductModule } from './product/product.module';
+import { Product } from './entity/product.entity';
+import { Brand } from './entity/brand.entity';
 
 @Module({
   imports: [
@@ -16,10 +19,11 @@ import { User } from './user/user.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: 'e_commerce',
-      entities: [User],
+      entities: [User, Product, Brand],
       synchronize: true,
     }),
     UserModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
