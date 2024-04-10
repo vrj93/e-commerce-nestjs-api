@@ -8,6 +8,9 @@ import { User } from './entity/user.entity';
 import { ProductModule } from './product/product.module';
 import { Product } from './entity/product.entity';
 import { Brand } from './entity/brand.entity';
+import { Color } from './entity/color.entity';
+import { Category } from './entity/category.entity';
+import { Country } from './entity/country.entity';
 
 @Module({
   imports: [
@@ -19,7 +22,7 @@ import { Brand } from './entity/brand.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: 'e_commerce',
-      entities: [User, Product, Brand],
+      entities: [User, Product, Brand, Color, Category, Country],
       synchronize: true,
     }),
     UserModule,

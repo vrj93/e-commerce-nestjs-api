@@ -10,7 +10,7 @@ export class ProductService {
     private productRepository: Repository<Product>,
   ) {}
 
-  filter(req: any): any {
-    return this.productRepository.findOneBy({ name: req.name });
+  async filter(req: any): Promise<any> {
+    return await this.productRepository.findOneBy({ name: req.name });
   }
 }
