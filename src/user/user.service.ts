@@ -1,10 +1,10 @@
 import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './user.entity';
+import { User } from '../entity/user.entity';
 import { Repository } from 'typeorm';
 import * as twilio from 'twilio';
-import encrypt from './utils/encryption';
-import decrypt from './utils/decryption';
+import encrypt from '../utils/encryption';
+import decrypt from '../utils/decryption';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()

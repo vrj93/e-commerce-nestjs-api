@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { VerifyOTPDto } from './dto/verify-otp.dto';
-import { LoginDto } from './dto/login.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { VerifyOTPDto } from '../dto/verify-otp.dto';
+import { LoginDto } from '../dto/login.dto';
 
 @Controller('user')
 export class UserController {
