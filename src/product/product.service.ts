@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from '../entity/product.entity';
 import { Brackets, Repository } from 'typeorm';
@@ -11,6 +11,14 @@ export class ProductService {
   ) {}
 
   async filter(req: any): Promise<any> {
+    if (!req.name) {
+      return {
+        flag: false,
+        status: HttpStatus.BAD_REQUEST,
+        msg: 'Please enter product name',
+      };
+    }
+
     const productObj = this.productRepository.createQueryBuilder('product');
     productObj
       .leftJoinAndSelect('product.brand', 'brand')
@@ -39,6 +47,13 @@ export class ProductService {
         }),
       );
     }
-    return productObj.getMany();
+    const products = await productObj.getMany();
+
+    return {
+      flag: true,
+      status: HttpStatus.OK,
+      msg: 'Product fetched successfully',
+      data: products,
+    };
   }
 }
