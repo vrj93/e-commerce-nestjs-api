@@ -11,6 +11,7 @@ import { Brand } from './entity/brand.entity';
 import { Color } from './entity/color.entity';
 import { Category } from './entity/category.entity';
 import { Country } from './entity/country.entity';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { Country } from './entity/country.entity';
     }),
     UserModule,
     ProductModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

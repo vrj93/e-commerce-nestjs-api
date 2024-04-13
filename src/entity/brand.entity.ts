@@ -6,4 +6,6 @@ export class Brand {
   id: number;
   @Column()
   name: string;
+  @Column({ nullable: true })
+  rank: number;
 }

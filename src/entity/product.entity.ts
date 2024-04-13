@@ -36,6 +36,10 @@ export class Product {
   manufacturer: string;
   @ManyToOne(() => Country)
   country: Country;
+  @Column({ nullable: true })
+  brandRank: number;
+  @Column({ nullable: true })
+  categoryRank: number;
   @CreateDateColumn()
   createdAt: Date;
   @UpdateDateColumn()
