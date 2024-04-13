@@ -24,7 +24,9 @@ export class ProductService {
       .leftJoinAndSelect('product.brand', 'brand')
       .leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.colors', 'color')
-      .where('product.name LIKE :name', { name: `%${req.name}%` });
+      .where('MATCH(product.name) AGAINST (:name)', {
+        name: `${req.name}`,
+      });
 
     if (req.brandId || req.categoryId || req.colorId) {
       productObj.andWhere(

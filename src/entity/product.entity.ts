@@ -1,7 +1,7 @@
 import {
   Column,
   CreateDateColumn,
-  Entity,
+  Entity, Index,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -13,6 +13,8 @@ import { Color } from './color.entity';
 import { Category } from './category.entity';
 import { Country } from './country.entity';
 
+//Keep index on top of the class
+@Index('idx_product_name', ['name'], { fulltext: true })
 @Entity({ name: 'products' })
 export class Product {
   @PrimaryGeneratedColumn()
