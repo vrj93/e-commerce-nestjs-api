@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDto } from '../dto/product.dto';
 
@@ -9,5 +9,20 @@ export class ProductController {
   @Post('filter')
   filter(@Body() productReq: ProductDto): any {
     return this.productService.filter(productReq);
+  }
+
+  @Get('category')
+  category(): any {
+    return this.productService.getCategory();
+  }
+
+  @Get('brand')
+  brand(): any {
+    return this.productService.getBrand();
+  }
+
+  @Get('color')
+  color(): any {
+    return this.productService.getColor();
   }
 }
