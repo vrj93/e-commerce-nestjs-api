@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDto } from '../dto/product.dto';
 
@@ -24,5 +24,10 @@ export class ProductController {
   @Get('color')
   color(): any {
     return this.productService.getColor();
+  }
+
+  @Get(':id')
+  product(@Param() params: any): any {
+    return this.productService.getProduct(params.id);
   }
 }

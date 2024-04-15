@@ -1,16 +1,22 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { VerifyOTPDto } from '../dto/verify-otp.dto';
 import { LoginDto } from '../dto/login.dto';
+import { ManageUserDto } from '../dto/manage-user.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('send-otp')
+  @Post('create-user')
   createUser(@Body() createUserReq: CreateUserDto): any {
-    return this.userService.sendOTP(createUserReq);
+    return this.userService.createUser(createUserReq);
+  }
+
+  @Put('send-otp/:id')
+  sendOTP(@Param() params: any): any {
+    return this.userService.sendOTP(params.id);
   }
 
   @Post('verify-otp')
@@ -23,7 +29,12 @@ export class UserController {
     return this.userService.login(loginReq);
   }
   @Get(':id')
-  getUser(@Param() params: any): string {
+  getUser(@Param() params: any): any {
     return this.userService.getUser(params.id);
+  }
+
+  @Put('manage/:id')
+  manageUser(@Body() manageUserReq: ManageUserDto, @Param() params: any): any {
+    return this.userService.manageUser(manageUserReq, params.id);
   }
 }

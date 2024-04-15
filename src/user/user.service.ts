@@ -2,10 +2,10 @@ import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entity/user.entity';
 import { Repository } from 'typeorm';
-import * as twilio from 'twilio';
 import encrypt from '../utils/encryption';
 import decrypt from '../utils/decryption';
 import { JwtService } from '@nestjs/jwt';
+import sendOTP from '../utils/sendOTP';
 
 @Injectable()
 export class UserService {
@@ -14,51 +14,37 @@ export class UserService {
     private userRepository: Repository<User>,
     private jwtService: JwtService,
   ) {}
-  getUser(userId: any): string {
-    return `This is user ${userId}`;
+
+  async createUser(req: any): Promise<any> {
+    const otpObj = await sendOTP();
+
+    if (otpObj.message.sid) {
+      req.otp = otpObj.code;
+
+      const password = req.password;
+      delete req.password;
+      const encryptObj = await encrypt(password);
+
+      req.password = encryptObj.password;
+      req.iv_code = encryptObj.iv_code;
+
+      await this.userRepository.upsert(req, ['phone']);
+
+      return {
+        id: req.id,
+        name: req.name,
+        phone: req.phone,
+      };
+    } else {
+      throw new Error('Failed to send OTP message');
+    }
   }
-  sendOTP(req: any): any {
-    const accountSid: string = process.env.TWILIO_ACCOUNT_SID;
-    const authToken: string = process.env.TWILIO_AUTH_TOKEN;
 
-    const client: twilio.Twilio = twilio(accountSid, authToken);
-
-    // Random Six digit code for OTP
-    const randomNum: number = Math.floor(Math.random() * 1000000);
-
-    // Ensure the number always has 6 digits
-    const code: string = randomNum.toString().padStart(6, '0');
-    return new Promise(async (resolve, reject) => {
-      try {
-        const message = await client.messages.create({
-          body: `OTP for verifying the phone is ${code}`,
-          from: process.env.TWILIO_PHONE_FROM,
-          to: process.env.TWILIO_PHONE_TO,
-        });
-
-        if (message.sid) {
-          req.otp = code;
-
-          const password = req.password;
-          delete req.password;
-          const encryptObj = await encrypt(password);
-          console.log(encryptObj);
-          req.password = encryptObj.password;
-          req.iv_code = encryptObj.iv_code;
-          await this.userRepository.upsert(req, ['phone']);
-          const res: object = {
-            id: req.id,
-            name: req.name,
-            phone: req.phone,
-          };
-          resolve(res); // Return phone number on success
-        } else {
-          reject(new Error('Failed to send OTP message'));
-        }
-      } catch (error) {
-        reject(error);
-      }
-    });
+  async sendOTP(id: number): Promise<any> {
+    const otpObj: any = await sendOTP();
+    if (otpObj.message.sid) {
+      await this.userRepository.update({ id }, { otp: otpObj.code });
+    }
   }
 
   async verifyOTP(req: any): Promise<any> {
@@ -142,8 +128,56 @@ export class UserService {
     return {
       flag: true,
       status: HttpStatus.OK,
-      access_token: access_token,
       msg: 'User is authenticated',
+      access_token: access_token,
+    };
+  }
+
+  async getUser(id: any): Promise<any> {
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.name',
+        'user.phone',
+        'user.email',
+        'user.is_phone',
+        'user.is_email',
+      ])
+      .where('user.id = :id', { id })
+      .getOne();
+  }
+
+  async manageUser(req: any, userId: any): Promise<any> {
+    const user: any = await this.userRepository.findOneBy({ id: userId });
+    let reqObj: object;
+
+    if (req.name && req.name != user.name) {
+      reqObj = { ...reqObj, ...{ name: req.name } };
+    }
+
+    if (req.phone && req.phone != user.phone) {
+      reqObj = { ...reqObj, ...{ phone: req.phone, is_phone: false } };
+    }
+
+    if (req.email && req.email != user.email) {
+      reqObj = { ...reqObj, ...{ email: req.email, is_email: false } };
+    }
+
+    if (req.password) {
+      const encryptObj = await encrypt(req.password);
+      reqObj = {
+        ...reqObj,
+        ...{ password: encryptObj.password, iv_code: encryptObj.iv_code },
+      };
+    }
+
+    await this.userRepository.update({ id: userId }, reqObj);
+
+    return {
+      flag: true,
+      status: HttpStatus.OK,
+      msg: 'Record updated successfully!',
     };
   }
 }

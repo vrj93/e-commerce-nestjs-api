@@ -79,4 +79,21 @@ export class ProductService {
   async getColor(): Promise<any> {
     return await this.colorRepository.find();
   }
+
+  async getProduct(productId: any): Promise<any> {
+    const product = await this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.brand', 'brand')
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.colors', 'color')
+      .where({ id: productId })
+      .getOne();
+
+    return {
+      flag: true,
+      status: HttpStatus.OK,
+      msg: 'Product fetched successfully',
+      data: product,
+    };
+  }
 }
