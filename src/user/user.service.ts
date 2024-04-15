@@ -150,7 +150,7 @@ export class UserService {
 
   async manageUser(req: any, userId: any): Promise<any> {
     const user: any = await this.userRepository.findOneBy({ id: userId });
-    let reqObj: object;
+    let reqObj: object = {};
 
     if (req.name && req.name != user.name) {
       reqObj = { ...reqObj, ...{ name: req.name } };
