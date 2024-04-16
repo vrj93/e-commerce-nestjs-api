@@ -12,6 +12,7 @@ import { Color } from './entity/color.entity';
 import { Category } from './entity/category.entity';
 import { Country } from './entity/country.entity';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -25,6 +26,16 @@ import { DashboardModule } from './dashboard/dashboard.module';
       database: 'e_commerce',
       entities: [User, Product, Brand, Color, Category, Country],
       synchronize: true,
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: `${process.env.MAIL_HOST}`,
+        port: 2525,
+        auth: {
+          user: `${process.env.MAIL_USER}`,
+          pass: `${process.env.MAIL_PASSWORD}`,
+        },
+      },
     }),
     UserModule,
     ProductModule,

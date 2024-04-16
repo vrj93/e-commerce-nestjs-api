@@ -6,6 +6,7 @@ import encrypt from '../utils/encryption';
 import decrypt from '../utils/decryption';
 import { JwtService } from '@nestjs/jwt';
 import sendOTP from '../utils/sendOTP';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class UserService {
@@ -13,6 +14,7 @@ export class UserService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
+    private mailService: MailerService,
   ) {}
 
   async createUser(req: any): Promise<any> {
@@ -43,7 +45,51 @@ export class UserService {
   async sendOTP(id: number): Promise<any> {
     const otpObj: any = await sendOTP();
     if (otpObj.message.sid) {
-      await this.userRepository.update({ id }, { otp: otpObj.code });
+      await this.userRepository.update(
+        { id },
+        { otp: otpObj.code, is_phone: false },
+      );
+
+      return {
+        flag: true,
+        status: HttpStatus.OK,
+        msg: 'OTP sent successfully!',
+      };
+    } else {
+      return {
+        flag: false,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: 'Something went wrong!',
+      };
+    }
+  }
+
+  async sendOTPMail(id: number): Promise<any> {
+    const randomNum: number = Math.floor(Math.random() * 1000000);
+    const code: any = randomNum.toString().padStart(6, '0');
+
+    const message = `OTP for Email Verification: ${code}`;
+
+    const mailObj = await this.mailService.sendMail({
+      from: 'vrj022@gmail.com',
+      to: 'vj9322@gmail.com',
+      subject: 'OTP for Email verification',
+      text: message,
+    });
+
+    if (mailObj.messageId) {
+      await this.userRepository.update({ id }, { otp: code, is_email: false });
+      return {
+        flag: true,
+        status: HttpStatus.OK,
+        msg: 'OTP sent successfully!',
+      };
+    } else {
+      return {
+        flag: false,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: 'Something went wrong!',
+      };
     }
   }
 

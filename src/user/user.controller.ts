@@ -19,6 +19,11 @@ export class UserController {
     return this.userService.sendOTP(params.id);
   }
 
+  @Put('send-otp-mail/:id')
+  sendOTPMail(@Param() params: any): any {
+    return this.userService.sendOTPMail(params.id);
+  }
+
   @Post('verify-otp')
   verifyOTP(@Body() verifyOTPReq: VerifyOTPDto): any {
     return this.userService.verifyOTP(verifyOTPReq);
