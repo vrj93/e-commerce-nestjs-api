@@ -12,7 +12,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    public userRepository: Repository<User>,
     private jwtService: JwtService,
     private mailService: MailerService,
   ) {}

@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
@@ -13,6 +18,8 @@ import { Category } from './entity/category.entity';
 import { Country } from './entity/country.entity';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { AuthMiddleware } from './middleware/auth.middleware';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -26,6 +33,11 @@ import { MailerModule } from '@nestjs-modules/mailer';
       database: 'e_commerce',
       entities: [User, Product, Brand, Color, Category, Country],
       synchronize: true,
+    }),
+    JwtModule.register({
+      global: true,
+      secret: `${process.env.JWT_SECRET}`,
+      signOptions: { expiresIn: '3600s' },
     }),
     MailerModule.forRoot({
       transport: {
@@ -44,4 +56,13 @@ import { MailerModule } from '@nestjs-modules/mailer';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): any {
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes(
+        { path: 'user/:id', method: RequestMethod.GET },
+        { path: 'user/manage/:id', method: RequestMethod.PUT },
+      );
+  }
+}
