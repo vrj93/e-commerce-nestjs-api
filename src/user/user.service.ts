@@ -7,12 +7,15 @@ import decrypt from '../utils/decryption';
 import { JwtService } from '@nestjs/jwt';
 import sendOTP from '../utils/sendOTP';
 import { MailerService } from '@nestjs-modules/mailer';
+import { Address } from '../entity/address.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     public userRepository: Repository<User>,
+    @InjectRepository(Address)
+    private addressRepository: Repository<Address>,
     private jwtService: JwtService,
     private mailService: MailerService,
   ) {}
@@ -225,5 +228,46 @@ export class UserService {
       status: HttpStatus.OK,
       msg: 'Record updated successfully!',
     };
+  }
+
+  async manageAddress(req: any, addressId: any): Promise<any> {
+    try {
+      if (addressId) {
+        await this.addressRepository.update({ id: addressId }, { ...req });
+      } else {
+        await this.addressRepository.save(req);
+      }
+      return {
+        flag: true,
+        status: HttpStatus.CREATED,
+        msg: 'Address updated successfully',
+      };
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  async getAddressByUser(userId: any): Promise<any> {
+    const addressObj = await this.addressRepository
+      .createQueryBuilder('address')
+      .innerJoin('address.user', 'user')
+      .where('user.id = :user', { user: userId })
+      .getMany();
+
+    if (addressObj.length >= 1) {
+      return {
+        flag: true,
+        status: HttpStatus.OK,
+        msg: 'Address fetched successfully!',
+        data: addressObj,
+      };
+    } else {
+      return {
+        flag: true,
+        status: HttpStatus.OK,
+        msg: 'No Address found!',
+        data: addressObj,
+      };
+    }
   }
 }

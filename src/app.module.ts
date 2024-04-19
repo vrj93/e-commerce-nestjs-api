@@ -20,6 +20,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { AuthMiddleware } from './middleware/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
+import { Address } from './entity/address.entity';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { JwtModule } from '@nestjs/jwt';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: 'e_commerce',
-      entities: [User, Product, Brand, Color, Category, Country],
+      entities: [User, Product, Brand, Color, Category, Country, Address],
       synchronize: true,
     }),
     JwtModule.register({

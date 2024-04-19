@@ -4,6 +4,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { VerifyOTPDto } from '../dto/verify-otp.dto';
 import { LoginDto } from '../dto/login.dto';
 import { ManageUserDto } from '../dto/manage-user.dto';
+import { ManageAddressDto } from '../dto/manage-address.dto';
 
 @Controller('user')
 export class UserController {
@@ -41,5 +42,18 @@ export class UserController {
   @Put('manage/:id')
   manageUser(@Body() manageUserReq: ManageUserDto, @Param() params: any): any {
     return this.userService.manageUser(manageUserReq, params.id);
+  }
+
+  @Post('manage/address/:id?')
+  manageAddress(
+    @Body() manageAddressReq: ManageAddressDto,
+    @Param() params: any,
+  ): any {
+    return this.userService.manageAddress(manageAddressReq, params.id);
+  }
+
+  @Get('get-address/:id')
+  getAddressByUser(@Param() params: any): any {
+    return this.userService.getAddressByUser(params.id);
   }
 }
