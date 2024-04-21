@@ -22,10 +22,6 @@ export class Product {
   id: number;
   @Column()
   name: string;
-  @ManyToOne(() => Brand)
-  brand: Brand;
-  @ManyToOne(() => Category)
-  category: Category;
   @Column()
   price: number;
   @Column()
@@ -34,17 +30,22 @@ export class Product {
   date_available: Date;
   @Column()
   manufacturer: string;
-  @ManyToOne(() => Country)
-  country: Country;
   @Column({ nullable: true })
   brandRank: number;
   @Column({ nullable: true })
   categoryRank: number;
+  @Column({ type: 'longtext', nullable: true })
+  image: any;
   @CreateDateColumn()
   createdAt: Date;
   @UpdateDateColumn()
   updatedAt: Date;
-
+  @ManyToOne(() => Brand)
+  brand: Brand;
+  @ManyToOne(() => Category)
+  category: Category;
+  @ManyToOne(() => Country)
+  country: Country;
   @ManyToMany(() => Color, (color) => color.products)
   @JoinTable({ name: 'product_color' })
   colors: Color[];

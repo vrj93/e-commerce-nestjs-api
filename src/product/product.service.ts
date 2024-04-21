@@ -5,6 +5,7 @@ import { Brackets, Repository } from 'typeorm';
 import { Category } from '../entity/category.entity';
 import { Brand } from '../entity/brand.entity';
 import { Color } from '../entity/color.entity';
+import { S3 } from 'aws-sdk';
 
 @Injectable()
 export class ProductService {
@@ -89,11 +90,43 @@ export class ProductService {
       .where({ id: productId })
       .getOne();
 
+    const imageObj = JSON.parse(product.image);
+    if (imageObj) {
+      delete product.image;
+      product.image = await this.getImageS3(imageObj.images);
+    }
+
     return {
       flag: true,
       status: HttpStatus.OK,
       msg: 'Product fetched successfully',
       data: product,
     };
+  }
+
+  async getImageS3(images: any): Promise<any> {
+    const region = process.env.AWS_BUCKET_REGION;
+    const accessKey = process.env.AWS_ACCESS_KEY;
+    const secretKey = process.env.AWS_SECRET_KEY;
+
+    try {
+      const s3 = new S3({
+        region: region,
+        accessKeyId: accessKey,
+        secretAccessKey: secretKey,
+      });
+
+      const imageUrl = [];
+      for (const image of images) {
+        const params = {
+          Bucket: 'e-commerce-nestjs-images',
+          Key: `product/${image}`,
+        };
+        imageUrl.push(await s3.getSignedUrlPromise('getObject', params));
+      }
+      return imageUrl;
+    } catch (err) {
+      throw new Error(err);
+    }
   }
 }
