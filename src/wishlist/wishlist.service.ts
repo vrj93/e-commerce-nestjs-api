@@ -33,4 +33,19 @@ export class WishlistService {
       msg: 'Added to Wishlist!',
     };
   }
+
+  async getWishlist(userId: any): Promise<any> {
+    const userObj = await this.userService.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.wishlists', 'product')
+      .where('user.id = :id', { id: userId })
+      .getOne();
+
+    return {
+      flag: true,
+      status: HttpStatus.OK,
+      msg: 'Wishlist fetched!',
+      data: userObj.wishlists
+    }
+  }
 }

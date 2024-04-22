@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AddToWishlistDto } from '../dto/add-to-wishlist.dto';
 import { WishlistService } from './wishlist.service';
 
@@ -11,5 +11,10 @@ export class WishlistController {
     @Body() addToWishListReq: AddToWishlistDto,
   ): Promise<any> {
     return this.wishlistService.addToWishlist(addToWishListReq);
+  }
+
+  @Get(':id')
+  async getWishlist(@Param() params: any) {
+    return this.wishlistService.getWishlist(params.id);
   }
 }

@@ -1,9 +1,4 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
@@ -66,6 +61,7 @@ export class AppModule implements NestModule {
       .forRoutes(
         { path: 'user/:id', method: RequestMethod.GET },
         { path: 'user/manage/:id', method: RequestMethod.PUT },
+        { path: 'wishlist/*', method: RequestMethod.ALL }
       );
   }
 }
