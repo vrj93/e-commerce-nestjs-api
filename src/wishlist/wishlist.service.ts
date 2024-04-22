@@ -4,9 +4,7 @@ import { Product } from '../entity/product.entity';
 
 @Injectable()
 export class WishlistService {
-  constructor(
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   async addToWishlist(req: any): Promise<any> {
     const userObj = await this.userService.userRepository
