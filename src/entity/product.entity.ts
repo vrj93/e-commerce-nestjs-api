@@ -53,5 +53,8 @@ export class Product {
   colors: Color[];
 
   @ManyToMany(() => User, (user) => user.wishlists)
-  users: User[];
+  wishlistUsers: User[];
+
+  @ManyToMany(() => User, (user) => user.carts)
+  cartUsers: User[];
 }

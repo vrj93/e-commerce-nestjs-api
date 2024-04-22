@@ -6,14 +6,14 @@ import { WishlistService } from './wishlist.service';
 export class WishlistController {
   constructor(private readonly wishlistService: WishlistService) {}
 
-  @Post('add-to-wishlist')
+  @Post('add')
   async addToWishlist(
     @Body() addToWishListReq: AddToWishlistDto,
   ): Promise<any> {
     return this.wishlistService.addToWishlist(addToWishListReq);
   }
 
-  @Get(':id')
+  @Get('user/:id')
   async getWishlist(@Param() params: any) {
     return this.wishlistService.getWishlist(params.id);
   }

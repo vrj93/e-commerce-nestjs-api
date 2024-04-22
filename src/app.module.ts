@@ -22,6 +22,7 @@ import { AuthMiddleware } from './middleware/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { Address } from './entity/address.entity';
 import { WishlistModule } from './wishlist/wishlist.module';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
     ProductModule,
     DashboardModule,
     WishlistModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -67,6 +69,7 @@ export class AppModule implements NestModule {
         { path: 'user/:id', method: RequestMethod.GET },
         { path: 'user/manage/:id', method: RequestMethod.PUT },
         { path: 'wishlist/*', method: RequestMethod.ALL },
+        { path: 'cart/*', method: RequestMethod.ALL },
       );
   }
 }

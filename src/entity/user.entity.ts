@@ -39,7 +39,13 @@ export class User {
   @OneToMany(() => Address, (address) => address.user)
   addresses: Address[];
 
-  @ManyToMany(() => Product, (product) => product.users, { cascade: true })
+  @ManyToMany(() => Product, (product) => product.wishlistUsers, {
+    cascade: true,
+  })
   @JoinTable({ name: 'wishlists' })
   wishlists: Product[];
+
+  @ManyToMany(() => Product, (product) => product.cartUsers, { cascade: true })
+  @JoinTable({ name: 'carts' })
+  carts: Product[];
 }
