@@ -21,6 +21,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { AuthMiddleware } from './middleware/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { Address } from './entity/address.entity';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { Address } from './entity/address.entity';
     UserModule,
     ProductModule,
     DashboardModule,
+    WishlistModule,
   ],
   controllers: [AppController],
   providers: [AppService],

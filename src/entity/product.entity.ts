@@ -13,6 +13,7 @@ import { Brand } from './brand.entity';
 import { Color } from './color.entity';
 import { Category } from './category.entity';
 import { Country } from './country.entity';
+import { User } from './user.entity';
 
 //Keep index on top of the class
 @Index('idx_product_name', ['name'], { fulltext: true })
@@ -46,7 +47,11 @@ export class Product {
   category: Category;
   @ManyToOne(() => Country)
   country: Country;
+
   @ManyToMany(() => Color, (color) => color.products)
   @JoinTable({ name: 'product_color' })
   colors: Color[];
+
+  @ManyToMany(() => User, (user) => user.wishlists)
+  users: User[];
 }

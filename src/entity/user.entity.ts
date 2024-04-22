@@ -2,11 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Address } from './address.entity';
+import { Product } from './product.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -35,4 +38,8 @@ export class User {
 
   @OneToMany(() => Address, (address) => address.user)
   addresses: Address[];
+
+  @ManyToMany(() => Product, (product) => product.users, { cascade: true })
+  @JoinTable({ name: 'wishlists' })
+  wishlists: Product[];
 }

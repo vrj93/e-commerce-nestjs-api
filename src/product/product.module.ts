@@ -11,5 +11,6 @@ import { Color } from '../entity/color.entity';
   imports: [TypeOrmModule.forFeature([Product, Category, Brand, Color])],
   providers: [ProductService],
   controllers: [ProductController],
+  exports: [ProductService],
 })
 export class ProductModule {}
