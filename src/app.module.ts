@@ -61,7 +61,7 @@ export class AppModule implements NestModule {
       .forRoutes(
         { path: 'user/:id', method: RequestMethod.GET },
         { path: 'user/manage/:id', method: RequestMethod.PUT },
-        { path: 'wishlist/*', method: RequestMethod.ALL }
+        { path: 'wishlist/*', method: RequestMethod.ALL },
       );
   }
 }
