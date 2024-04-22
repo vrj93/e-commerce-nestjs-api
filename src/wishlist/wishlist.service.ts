@@ -1,13 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { ProductService } from '../product/product.service';
 import { Product } from '../entity/product.entity';
 
 @Injectable()
 export class WishlistService {
   constructor(
     private readonly userService: UserService,
-    private readonly productService: ProductService,
   ) {}
 
   async addToWishlist(req: any): Promise<any> {
@@ -45,7 +43,7 @@ export class WishlistService {
       flag: true,
       status: HttpStatus.OK,
       msg: 'Wishlist fetched!',
-      data: userObj.wishlists
-    }
+      data: userObj.wishlists,
+    };
   }
 }
