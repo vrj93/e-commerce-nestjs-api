@@ -1,5 +1,12 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from './user.entity';
+import { Order } from './order.entity';
 
 @Entity({ name: 'addresses' })
 export class Address {
@@ -22,4 +29,7 @@ export class Address {
 
   @ManyToOne(() => User, (user) => user.addresses)
   user: User;
+
+  @OneToMany(() => Order, (order) => order.address)
+  orders: Order[];
 }

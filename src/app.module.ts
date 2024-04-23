@@ -23,6 +23,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { Address } from './entity/address.entity';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { CartModule } from './cart/cart.module';
+import { OrderModule } from './order/order.module';
+import { Order } from './entity/order.entity';
 
 @Module({
   imports: [
@@ -34,7 +36,16 @@ import { CartModule } from './cart/cart.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: 'e_commerce',
-      entities: [User, Product, Brand, Color, Category, Country, Address],
+      entities: [
+        User,
+        Product,
+        Brand,
+        Color,
+        Category,
+        Country,
+        Address,
+        Order,
+      ],
       synchronize: true,
     }),
     JwtModule.register({
@@ -57,6 +68,7 @@ import { CartModule } from './cart/cart.module';
     DashboardModule,
     WishlistModule,
     CartModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
