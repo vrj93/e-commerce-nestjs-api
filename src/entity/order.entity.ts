@@ -2,16 +2,19 @@ import {
   Column,
   Entity,
   Index,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Address } from './address.entity';
 import { Product } from './product.entity';
+import { Payment } from './payment.entity';
 
-@Entity()
+@Entity({ name: 'orders' })
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
@@ -20,7 +23,7 @@ export class Order {
   @Index({ unique: true })
   orderId: string;
 
-  @Column()
+  @Column({ nullable: true })
   arrivalDate: Date;
 
   @ManyToOne(() => User, (user) => user.orders)
@@ -30,6 +33,10 @@ export class Order {
   @JoinTable({ name: 'order_product' })
   products: Product[];
 
-  @ManyToOne(() => Address, (address) => address.orders)
-  address: Address;
+  @ManyToOne(() => Address, (address) => address.orders, { nullable: true })
+  address: Address | null;
+
+  @OneToOne(() => Payment, { nullable: true })
+  @JoinColumn()
+  payment: Payment | null;
 }

@@ -25,6 +25,8 @@ import { WishlistModule } from './wishlist/wishlist.module';
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
 import { Order } from './entity/order.entity';
+import { PaymentModule } from './payment/payment.module';
+import { Payment } from './entity/payment.entity';
 
 @Module({
   imports: [
@@ -45,6 +47,7 @@ import { Order } from './entity/order.entity';
         Country,
         Address,
         Order,
+        Payment,
       ],
       synchronize: true,
     }),
@@ -69,6 +72,7 @@ import { Order } from './entity/order.entity';
     WishlistModule,
     CartModule,
     OrderModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -82,6 +86,8 @@ export class AppModule implements NestModule {
         { path: 'user/manage/:id', method: RequestMethod.PUT },
         { path: 'wishlist/*', method: RequestMethod.ALL },
         { path: 'cart/*', method: RequestMethod.ALL },
+        { path: 'order/*', method: RequestMethod.ALL },
+        { path: 'payment/*', method: RequestMethod.ALL },
       );
   }
 }
