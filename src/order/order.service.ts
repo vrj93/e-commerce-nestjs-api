@@ -65,4 +65,29 @@ export class OrderService {
       };
     }
   }
+
+  async getOrder(userId: any): Promise<any> {
+    const orders = await this.orderRepository
+      .createQueryBuilder('order')
+      .innerJoin('order.user', 'user')
+      .innerJoinAndSelect('order.products', 'product')
+      .where('user.id = :id', { id: userId })
+      .getMany();
+
+    if (orders) {
+      return {
+        flag: true,
+        status: HttpStatus.OK,
+        msg: 'Order fetched successfully!',
+        data: orders,
+      };
+    } else {
+      return {
+        flag: true,
+        status: HttpStatus.OK,
+        msg: 'No Order found!',
+        data: orders,
+      };
+    }
+  }
 }
