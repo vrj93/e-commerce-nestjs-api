@@ -1,4 +1,4 @@
-import * as twilio from 'twilio';
+import twilio from 'twilio';
 
 const sendOTP = async () => {
   const accountSid: string = process.env.TWILIO_ACCOUNT_SID;

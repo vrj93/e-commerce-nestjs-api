@@ -4,16 +4,14 @@ import { Product } from '../entity/product.entity';
 import { Repository } from 'typeorm';
 import { Category } from '../entity/category.entity';
 import { Brand } from '../entity/brand.entity';
+import { exec } from 'child_process';
+import fetch from 'node-fetch';
 
 @Injectable()
 export class DashboardService {
   constructor(
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
-    @InjectRepository(Category)
-    private categoryRepository: Repository<Category>,
-    @InjectRepository(Brand)
-    private brandRepository: Repository<Brand>,
   ) {}
 
   async getProductByCategory(): Promise<any> {
@@ -66,5 +64,44 @@ export class DashboardService {
       msg: 'Product fetched successfully',
       data: products,
     };
+  }
+
+  async getGeoLocation(): Promise<any> {
+    let ip: any;
+
+    await this.findClientIP()
+      .then((stdout) => {
+        ip = stdout;
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    const url = `http://api.ipstack.com/${ip}?access_key=${process.env.GEO_LOCATION_API_KEY}`;
+    const response = await fetch(url.replace(/\r?\n|\r/g, ''));
+
+    const result = await response.json();
+
+    // noinspection JSUnresolvedReference
+    return {
+      flag: true,
+      status: HttpStatus.OK,
+      msg: 'Location fetched!',
+      data: {
+        country: result.country_name,
+        city: result.city,
+      },
+    };
+  }
+
+  async findClientIP(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      exec('curl ip-adresim.app', function (error, stdout) {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve(stdout);
+      });
+    });
   }
 }

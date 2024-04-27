@@ -14,4 +14,9 @@ export class DashboardController {
   productByBrand(): any {
     return this.dashboardService.getProductByBrand();
   }
+
+  @Get('location')
+  getGeoLocation(): any {
+    return this.dashboardService.getGeoLocation();
+  }
 }
