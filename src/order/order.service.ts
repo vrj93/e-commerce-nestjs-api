@@ -71,7 +71,9 @@ export class OrderService {
       .createQueryBuilder('order')
       .innerJoin('order.user', 'user')
       .innerJoinAndSelect('order.products', 'product')
+      .innerJoin('order.payment', 'payment')
       .where('user.id = :id', { id: userId })
+      .andWhere('payment.status = :status', { status: 'captured' })
       .getMany();
 
     if (orders) {
