@@ -12,6 +12,9 @@ export class Payment {
   @Column()
   amount: number;
 
-  @Column()
-  status: boolean;
+  @Column({ nullable: true })
+  method: string;
+
+  @Column({ nullable: true })
+  status: string;
 }
