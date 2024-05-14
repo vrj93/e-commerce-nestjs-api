@@ -139,14 +139,14 @@ export class UserService {
     let user: any;
     const reqPassword = req.password;
 
-    if (req.phone) {
+    user = await this.userRepository.findOneBy({
+      phone: req.user,
+      is_phone: true,
+    });
+
+    if (!user) {
       user = await this.userRepository.findOneBy({
-        phone: req.phone,
-        is_phone: true,
-      });
-    } else if (req.email) {
-      user = await this.userRepository.findOneBy({
-        email: req.email,
+        email: req.user,
         is_email: true,
       });
     }
@@ -165,12 +165,7 @@ export class UserService {
       throw new UnauthorizedException();
     }
 
-    let payload: any;
-    if (req.phone) {
-      payload = { sub: user.id, username: user.phone };
-    } else if (req.email) {
-      payload = { sub: user.id, username: user.email };
-    }
+    const payload = { sub: user.id, username: user.phone };
 
     const access_token: string = await this.jwtService.signAsync(payload);
 
@@ -178,7 +173,10 @@ export class UserService {
       flag: true,
       status: HttpStatus.OK,
       msg: 'User is authenticated',
-      access_token: access_token,
+      data: {
+        name: user.name.split(' ')[0],
+        access_token: access_token,
+      },
     };
   }
 
