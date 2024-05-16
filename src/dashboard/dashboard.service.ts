@@ -2,10 +2,9 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from '../entity/product.entity';
 import { Repository } from 'typeorm';
-import { Category } from '../entity/category.entity';
-import { Brand } from '../entity/brand.entity';
 import { exec } from 'child_process';
 import fetch from 'node-fetch';
+import getImageS3 from '../utils/getImageS3';
 
 @Injectable()
 export class DashboardService {
@@ -20,17 +19,26 @@ export class DashboardService {
       .select('p.id', 'product_id')
       .addSelect('p.name', 'product_name')
       .addSelect('p.price', 'price')
+      .addSelect('p.image', 'image')
       .addSelect('c.name', 'category_name')
       .addSelect('c.rank', 'category_rank')
       .addSelect('b.name', 'brand')
       .addSelect('GROUP_CONCAT(c2.name)', 'colors')
-      .innerJoin(Category, 'c', 'p.categoryId = c.id AND c.rank != 0')
-      .innerJoin(Brand, 'b', 'p.brandId = b.id')
+      .innerJoin('p.category', 'c')
+      .innerJoin('p.brand', 'b')
       .innerJoin('p.colors', 'c2') //Color property -> Color table Alias
       .where('p.categoryRank = 1')
       .groupBy('p.id')
       .orderBy('c.rank')
       .getRawMany();
+
+    for (const product of products) {
+      if (product.image) {
+        const images = JSON.parse(product.image);
+        delete product.image;
+        product.image = await getImageS3(images.images);
+      }
+    }
 
     return {
       flag: true,
@@ -46,17 +54,26 @@ export class DashboardService {
       .select('p.id', 'product_id')
       .addSelect('p.name', 'product_name')
       .addSelect('p.price', 'price')
+      .addSelect('p.image', 'image')
       .addSelect('b.name', 'brand')
       .addSelect('b.rank', 'brand_rank')
       .addSelect('c.name', 'category_name')
       .addSelect('GROUP_CONCAT(c2.name)', 'colors')
-      .innerJoin(Brand, 'b', 'p.brandId = b.id AND b.rank != 0')
-      .innerJoin(Category, 'c', 'p.categoryId = c.id')
+      .innerJoin('p.brand', 'b')
+      .innerJoin('p.category', 'c')
       .innerJoin('p.colors', 'c2') //Color property -> Color table Alias
       .where('p.brandRank = 1')
       .groupBy('p.id')
       .orderBy('b.rank')
       .getRawMany();
+
+    for (const product of products) {
+      if (product.image) {
+        const images = JSON.parse(product.image);
+        delete product.image;
+        product.image = await getImageS3(images.images);
+      }
+    }
 
     return {
       flag: true,
