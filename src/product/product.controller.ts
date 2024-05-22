@@ -1,33 +1,42 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDto } from '../dto/product.dto';
+import { Response } from 'express';
 
 @Controller('product')
 export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Post('filter')
-  filter(@Body() productReq: ProductDto): any {
-    return this.productService.filter(productReq);
+  async filter(
+    @Body() productReq: ProductDto,
+    @Res() res: Response,
+  ): Promise<any> {
+    const serviceRes = await this.productService.filter(productReq);
+    res.status(serviceRes.status).json(serviceRes);
   }
 
   @Get('category')
-  category(): any {
-    return this.productService.getCategory();
+  async category(@Res() res: Response): Promise<any> {
+    const serviceRes = await this.productService.getCategory();
+    res.status(serviceRes.status).json(serviceRes);
   }
 
   @Get('brand')
-  brand(): any {
-    return this.productService.getBrand();
+  async brand(@Res() res: Response): Promise<any> {
+    const serviceRes = await this.productService.getBrand();
+    res.status(serviceRes.status).json(serviceRes);
   }
 
   @Get('color')
-  color(): any {
-    return this.productService.getColor();
+  async color(@Res() res: Response): Promise<any> {
+    const serviceRes = await this.productService.getColor();
+    res.status(serviceRes.status).json(serviceRes);
   }
 
   @Get(':id')
-  product(@Param() params: any): any {
-    return this.productService.getProduct(params.id);
+  async product(@Param() params: any, @Res() res: Response): Promise<any> {
+    const serviceRes = await this.productService.getProduct(params.id);
+    res.status(serviceRes.status).json(serviceRes);
   }
 }

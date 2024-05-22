@@ -70,15 +70,33 @@ export class ProductService {
   }
 
   async getCategory(): Promise<any> {
-    return await this.categoryRepository.find();
+    const res = await this.categoryRepository.find();
+    return {
+      flag: true,
+      status: HttpStatus.OK,
+      msg: 'Categories fetched successfully!',
+      data: res,
+    };
   }
 
   async getBrand(): Promise<any> {
-    return await this.brandRepository.find();
+    const res = await this.brandRepository.find();
+    return {
+      flag: true,
+      status: HttpStatus.OK,
+      msg: 'Categories fetched successfully!',
+      data: res,
+    };
   }
 
   async getColor(): Promise<any> {
-    return await this.colorRepository.find();
+    const res = await this.colorRepository.find();
+    return {
+      flag: true,
+      status: HttpStatus.OK,
+      msg: 'Categories fetched successfully!',
+      data: res,
+    };
   }
 
   async getProduct(productId: any): Promise<any> {
