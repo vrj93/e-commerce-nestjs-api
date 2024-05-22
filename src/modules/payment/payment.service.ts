@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { Payment } from '../entity/payment.entity';
+import { Payment } from '../../entity/payment.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import Razorpay from 'razorpay';
 import { createHmac } from 'node:crypto';

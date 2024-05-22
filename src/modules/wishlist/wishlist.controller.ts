@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
-import { AddToWishlistDto } from '../dto/add-to-wishlist.dto';
+import { AddToWishlistDto } from '../../dto/add-to-wishlist.dto';
 import { WishlistService } from './wishlist.service';
 import { Response } from 'express';
 

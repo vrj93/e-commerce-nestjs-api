@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
 import { CartService } from './cart.service';
-import { AddToCartDto } from '../dto/add-to-cart.dto';
+import { AddToCartDto } from '../../dto/add-to-cart.dto';
 import { Response } from 'express';
 
 @Controller('cart')

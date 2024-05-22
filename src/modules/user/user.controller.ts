@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { VerifyOTPDto } from '../dto/verify-otp.dto';
-import { LoginDto } from '../dto/login.dto';
-import { ManageUserDto } from '../dto/manage-user.dto';
-import { ManageAddressDto } from '../dto/manage-address.dto';
+import { CreateUserDto } from '../../dto/create-user.dto';
+import { VerifyOTPDto } from '../../dto/verify-otp.dto';
+import { LoginDto } from '../../dto/login.dto';
+import { ManageUserDto } from '../../dto/manage-user.dto';
+import { ManageAddressDto } from '../../dto/manage-address.dto';
 import { Response } from 'express';
 
 @Controller('user')

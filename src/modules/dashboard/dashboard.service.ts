@@ -1,10 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from '../entity/product.entity';
+import { Product } from '../../entity/product.entity';
 import { Repository } from 'typeorm';
 import { exec } from 'child_process';
 import fetch from 'node-fetch';
-import getImageS3 from '../utils/getImageS3';
+import getImageS3 from '../../utils/getImageS3';
 
 @Injectable()
 export class DashboardService {

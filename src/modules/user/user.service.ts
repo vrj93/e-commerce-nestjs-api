@@ -1,13 +1,13 @@
 import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../entity/user.entity';
+import { User } from '../../entity/user.entity';
 import { Repository } from 'typeorm';
-import encrypt from '../utils/encryption';
-import decrypt from '../utils/decryption';
+import encrypt from '../../utils/encryption';
+import decrypt from '../../utils/decryption';
 import { JwtService } from '@nestjs/jwt';
-import sendOTP from '../utils/sendOTP';
+import sendOTP from '../../utils/sendOTP';
 import { MailerService } from '@nestjs-modules/mailer';
-import { Address } from '../entity/address.entity';
+import { Address } from '../../entity/address.entity';
 
 @Injectable()
 export class UserService {

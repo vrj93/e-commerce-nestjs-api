@@ -1,11 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from '../entity/product.entity';
+import { Product } from '../../entity/product.entity';
 import { Brackets, Repository } from 'typeorm';
-import { Category } from '../entity/category.entity';
-import { Brand } from '../entity/brand.entity';
-import { Color } from '../entity/color.entity';
-import getImageS3 from '../utils/getImageS3';
+import { Category } from '../../entity/category.entity';
+import { Brand } from '../../entity/brand.entity';
+import { Color } from '../../entity/color.entity';
+import getImageS3 from '../../utils/getImageS3';
 
 @Injectable()
 export class ProductService {
