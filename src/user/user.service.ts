@@ -36,9 +36,14 @@ export class UserService {
       await this.userRepository.upsert(req, ['phone']);
 
       return {
-        id: req.id,
-        name: req.name,
-        phone: req.phone,
+        flag: true,
+        status: HttpStatus.CREATED,
+        msg: 'OTP sent successfully',
+        data: {
+          id: req.id,
+          name: req.name,
+          phone: req.phone,
+        },
       };
     } else {
       throw new Error('Failed to send OTP message');
@@ -135,6 +140,7 @@ export class UserService {
 
     return res;
   }
+
   async login(req: any): Promise<any> {
     let user: any;
     const reqPassword = req.password;
@@ -166,7 +172,6 @@ export class UserService {
     }
 
     const payload = { sub: user.id, username: user.phone };
-
     const access_token: string = await this.jwtService.signAsync(payload);
 
     return {
@@ -181,7 +186,7 @@ export class UserService {
   }
 
   async getUser(id: any): Promise<any> {
-    return await this.userRepository
+    const user = await this.userRepository
       .createQueryBuilder('user')
       .select([
         'user.id',
@@ -193,6 +198,13 @@ export class UserService {
       ])
       .where('user.id = :id', { id })
       .getOne();
+
+    return {
+      flag: true,
+      status: HttpStatus.OK,
+      msg: 'User fetched successfully',
+      data: user,
+    };
   }
 
   async manageUser(req: any, userId: any): Promise<any> {

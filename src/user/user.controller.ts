@@ -1,59 +1,90 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { VerifyOTPDto } from '../dto/verify-otp.dto';
 import { LoginDto } from '../dto/login.dto';
 import { ManageUserDto } from '../dto/manage-user.dto';
 import { ManageAddressDto } from '../dto/manage-address.dto';
+import { Response } from 'express';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('create-user')
-  createUser(@Body() createUserReq: CreateUserDto): any {
-    return this.userService.createUser(createUserReq);
+  async createUser(
+    @Body() createUserReq: CreateUserDto,
+    @Res() res: Response,
+  ): Promise<any> {
+    const serviceRes = await this.userService.createUser(createUserReq);
+    res.status(serviceRes.status).json(serviceRes);
   }
 
   @Put('send-otp/:id')
-  sendOTP(@Param() params: any): any {
-    return this.userService.sendOTP(params.id);
+  async sendOTP(@Param() params: any, @Res() res: Response): Promise<any> {
+    const serviceRes = await this.userService.sendOTP(params.id);
+    res.status(serviceRes.status).json(serviceRes);
   }
 
   @Put('send-otp-mail/:id')
-  sendOTPMail(@Param() params: any): any {
-    return this.userService.sendOTPMail(params.id);
+  async sendOTPMail(@Param() params: any, @Res() res: Response): Promise<any> {
+    const serviceRes = await this.userService.sendOTPMail(params.id);
+    res.status(serviceRes.status).json(serviceRes);
   }
 
   @Post('verify-otp')
-  verifyOTP(@Body() verifyOTPReq: VerifyOTPDto): any {
-    return this.userService.verifyOTP(verifyOTPReq);
+  async verifyOTP(
+    @Body() verifyOTPReq: VerifyOTPDto,
+    @Res() res: Response,
+  ): Promise<any> {
+    const serviceRes = await this.userService.verifyOTP(verifyOTPReq);
+    res.status(serviceRes.status).json(serviceRes);
   }
 
   @Post('login')
-  login(@Body() loginReq: LoginDto): any {
-    return this.userService.login(loginReq);
+  async login(@Body() loginReq: LoginDto, @Res() res: Response): Promise<any> {
+    const serviceRes = await this.userService.login(loginReq);
+    res.status(serviceRes.status).json(serviceRes);
   }
+
   @Get(':id')
-  getUser(@Param() params: any): any {
-    return this.userService.getUser(params.id);
+  async getUser(@Param() params: any, @Res() res: Response): Promise<any> {
+    const serviceRes = await this.userService.getUser(params.id);
+    res.status(serviceRes.status).json(serviceRes);
   }
 
   @Put('manage/:id')
-  manageUser(@Body() manageUserReq: ManageUserDto, @Param() params: any): any {
-    return this.userService.manageUser(manageUserReq, params.id);
+  async manageUser(
+    @Body() manageUserReq: ManageUserDto,
+    @Param() params: any,
+    @Res() res: Response,
+  ): Promise<any> {
+    const serviceRes = await this.userService.manageUser(
+      manageUserReq,
+      params.id,
+    );
+    res.status(serviceRes.status).json(serviceRes);
   }
 
   @Post('manage/address/:id?')
-  manageAddress(
+  async manageAddress(
     @Body() manageAddressReq: ManageAddressDto,
     @Param() params: any,
-  ): any {
-    return this.userService.manageAddress(manageAddressReq, params.id);
+    @Res() res: Response,
+  ): Promise<any> {
+    const serviceRes = await this.userService.manageAddress(
+      manageAddressReq,
+      params.id,
+    );
+    res.status(serviceRes.status).json(serviceRes);
   }
 
   @Get('get-address/:id')
-  getAddressByUser(@Param() params: any): any {
-    return this.userService.getAddressByUser(params.id);
+  async getAddressByUser(
+    @Param() params: any,
+    @Res() res: Response,
+  ): Promise<any> {
+    const serviceRes = await this.userService.getAddressByUser(params.id);
+    res.status(serviceRes.status).json(serviceRes);
   }
 }
