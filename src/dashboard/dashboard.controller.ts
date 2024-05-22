@@ -1,22 +1,26 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Res } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
+import { Response } from 'express';
 
 @Controller('dashboard')
 export class DashboardController {
   constructor(private dashboardService: DashboardService) {}
 
   @Get('product-by-category')
-  productByCategory(): any {
-    return this.dashboardService.getProductByCategory();
+  async productByCategory(@Res() res: Response): Promise<any> {
+    const serviceRes = await this.dashboardService.getProductByCategory();
+    res.status(serviceRes.status).json(serviceRes);
   }
 
   @Get('product-by-brand')
-  productByBrand(): any {
-    return this.dashboardService.getProductByBrand();
+  async productByBrand(@Res() res: Response): Promise<any> {
+    const serviceRes = await this.dashboardService.getProductByBrand();
+    res.status(serviceRes.status).json(serviceRes);
   }
 
   @Get('location')
-  getGeoLocation(): any {
-    return this.dashboardService.getGeoLocation();
+  async getGeoLocation(@Res() res: Response): Promise<any> {
+    const serviceRes = await this.dashboardService.getGeoLocation();
+    res.status(serviceRes.status).json(serviceRes);
   }
 }
