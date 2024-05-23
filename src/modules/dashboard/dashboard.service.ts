@@ -104,8 +104,8 @@ export class DashboardService {
       status: HttpStatus.OK,
       msg: 'Location fetched!',
       data: {
-        country: result.country_name,
-        city: result.city,
+        country: result.country_name ? result.country_name : '',
+        city: result.city ? result.city : '',
       },
     };
   }
