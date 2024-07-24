@@ -59,7 +59,18 @@ export class ProductService {
         }),
       );
     }
+    const selectedCategories = [];
     const products = await productObj.getMany();
+    for (const product of products) {
+      if (product.image) {
+        const images = JSON.parse(product.image);
+        delete product.image;
+        product.image = await getImageS3(images.images);
+      }
+      if (product.category) {
+        selectedCategories.push(product.category.id);
+      }
+    }
 
     return {
       flag: true,
