@@ -21,7 +21,7 @@ export class ProductService {
   ) {}
 
   async filter(req: any): Promise<any> {
-    if (!req.name) {
+    if (!req.search) {
       return {
         flag: false,
         status: HttpStatus.BAD_REQUEST,
@@ -35,10 +35,10 @@ export class ProductService {
       .leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.colors', 'color')
       .where('MATCH(product.name) AGAINST (:name)', {
-        name: `${req.name}`,
+        name: `${req.search}`,
       });
 
-    if (req.brandId || req.categoryId || req.colorId) {
+    if (req.brandId || req.categories !== null || req.colorId) {
       productObj.andWhere(
         new Brackets((qb) => {
           if (req.brandId) {
@@ -46,9 +46,9 @@ export class ProductService {
               brandId: req.brandId,
             });
           }
-          if (req.categoryId) {
-            qb.orWhere('category.id IN (:...categoryId)', {
-              categoryId: req.categoryId,
+          if (req.categories !== null) {
+            qb.orWhere('category.slug IN (:...categories)', {
+              categories: req.categories,
             });
           }
           if (req.colorId) {
@@ -81,7 +81,9 @@ export class ProductService {
   }
 
   async getCategory(): Promise<any> {
-    const res = await this.categoryRepository.find();
+    const res = await this.categoryRepository.find({
+      select: ['name', 'slug'],
+    });
     return {
       flag: true,
       status: HttpStatus.OK,

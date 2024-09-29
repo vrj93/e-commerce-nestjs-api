@@ -6,6 +6,8 @@ export class Category {
   id: number;
   @Column()
   name: string;
+  @Column()
+  slug: string;
   @Column({ nullable: true })
   rank: number;
 }
