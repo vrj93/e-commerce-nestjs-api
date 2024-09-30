@@ -93,7 +93,9 @@ export class ProductService {
   }
 
   async getBrand(): Promise<any> {
-    const res = await this.brandRepository.find();
+    const res = await this.brandRepository.find({
+      select: ['name', 'slug'],
+    });
     return {
       flag: true,
       status: HttpStatus.OK,
