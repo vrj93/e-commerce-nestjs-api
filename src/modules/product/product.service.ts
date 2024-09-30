@@ -38,21 +38,25 @@ export class ProductService {
         name: `${req.search}`,
       });
 
-    if (req.brandId || req.categories !== null || req.colorId) {
+    if (
+      (req.brands && req.brands.length) ||
+      (req.categories && req.categories.length) ||
+      req.colorId
+    ) {
       productObj.andWhere(
         new Brackets((qb) => {
-          if (req.brandId) {
-            qb.where('brand.id IN (:...brandId)', {
-              brandId: req.brandId,
-            });
-          }
-          if (req.categories !== null) {
-            qb.orWhere('category.slug IN (:...categories)', {
+          if (req.categories && req.categories.length) {
+            qb.where('category.slug IN (:...categories)', {
               categories: req.categories,
             });
           }
+          if (req.brands && req.brands.length) {
+            qb.where('brand.slug IN (:...brands)', {
+              brands: req.brands,
+            });
+          }
           if (req.colorId) {
-            qb.orWhere('color.id IN (:...colorId)', {
+            qb.where('color.id IN (:...colorId)', {
               colorId: req.colorId,
             });
           }
