@@ -51,13 +51,13 @@ export class ProductService {
             });
           }
           if (req.brands && req.brands.length) {
-            qb.where('brand.slug IN (:...brands)', {
+            qb.andWhere('brand.slug IN (:...brands)', {
               brands: req.brands,
             });
           }
-          if (req.colorId) {
-            qb.where('color.id IN (:...colorId)', {
-              colorId: req.colorId,
+          if (req.colors && req.colors.length) {
+            qb.andWhere('color.name IN (:...colors)', {
+              colors: req.colors,
             });
           }
         }),
@@ -109,7 +109,9 @@ export class ProductService {
   }
 
   async getColor(): Promise<any> {
-    const res = await this.colorRepository.find();
+    const res = await this.colorRepository.find({
+      select: ['name'],
+    });
     return {
       flag: true,
       status: HttpStatus.OK,
