@@ -82,7 +82,7 @@ export class AppModule implements NestModule {
     consumer
       .apply(AuthMiddleware)
       .forRoutes(
-        { path: 'user/:id', method: RequestMethod.GET },
+        { path: 'user/:id(\\d+)', method: RequestMethod.GET },
         { path: 'user/manage/:id', method: RequestMethod.PUT },
         { path: 'wishlist/*', method: RequestMethod.ALL },
         { path: 'cart/*', method: RequestMethod.ALL },

@@ -13,7 +13,7 @@ const sendOTP = async () => {
   const code: string = randomNum.toString().padStart(6, '0');
 
   const message = await client.messages.create({
-    body: `OTP for verifying the phone is ${code}`,
+    body: `OTP: ${code} for verifying the phone.`,
     from: process.env.TWILIO_PHONE_FROM,
     to: process.env.TWILIO_PHONE_TO,
   });

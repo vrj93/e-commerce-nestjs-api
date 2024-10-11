@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Res,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from '../../dto/create-user.dto';
 import { VerifyOTPDto } from '../../dto/verify-otp.dto';
@@ -6,6 +15,8 @@ import { LoginDto } from '../../dto/login.dto';
 import { ManageUserDto } from '../../dto/manage-user.dto';
 import { ManageAddressDto } from '../../dto/manage-address.dto';
 import { Response } from 'express';
+import { SearchPhoneDto } from 'src/dto/search-phone.dto';
+import { SearchEmailDto } from 'src/dto/search-email.dto';
 
 @Controller('user')
 export class UserController {
@@ -47,7 +58,7 @@ export class UserController {
     res.status(serviceRes.status).json(serviceRes);
   }
 
-  @Get(':id')
+  @Get('find/:id')
   async getUser(@Param() params: any, @Res() res: Response): Promise<any> {
     const serviceRes = await this.userService.getUser(params.id);
     res.status(serviceRes.status).json(serviceRes);
@@ -86,5 +97,27 @@ export class UserController {
   ): Promise<any> {
     const serviceRes = await this.userService.getAddressByUser(params.id);
     res.status(serviceRes.status).json(serviceRes);
+  }
+
+  @Get('search-phone/:phone')
+  async searchPhone(
+    @Param() params: SearchPhoneDto,
+    @Res() res: Response,
+  ): Promise<any> {
+    const serviceRes = await this.userService.searchPhone(params.phone);
+    res
+      .status(serviceRes.flag ? HttpStatus.BAD_REQUEST : HttpStatus.OK)
+      .json(serviceRes);
+  }
+
+  @Get('search-email/:email')
+  async searchEmail(
+    @Param() params: SearchEmailDto,
+    @Res() res: Response,
+  ): Promise<any> {
+    const serviceRes = await this.userService.searchEmail(params.email);
+    res
+      .status(serviceRes.flag ? HttpStatus.BAD_REQUEST : HttpStatus.OK)
+      .json(serviceRes);
   }
 }

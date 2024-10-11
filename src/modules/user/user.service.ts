@@ -20,6 +20,16 @@ export class UserService {
     private mailService: MailerService,
   ) {}
 
+  async searchPhone(phone: any): Promise<any> {
+    const userObj = await this.userRepository.findOneBy({ phone });
+    return userObj ? { flag: true } : { flag: false };
+  }
+
+  async searchEmail(email: any): Promise<any> {
+    const userObj = await this.userRepository.findOneBy({ email });
+    return userObj ? { flag: true } : { flag: false };
+  }
+
   async createUser(req: any): Promise<any> {
     const otpObj = await sendOTP();
 
@@ -142,22 +152,29 @@ export class UserService {
   }
 
   async login(req: any): Promise<any> {
-    let user: any;
-    const reqPassword = req.password;
+    let userRes;
+    const user: any = req.user;
+    const reqPassword: string = req.password;
 
-    user = await this.userRepository.findOneBy({
-      phone: req.user,
-      is_phone: true,
-    });
-
-    if (!user) {
-      user = await this.userRepository.findOneBy({
+    if (user.phone !== '') {
+      userRes = await this.userRepository.findOneBy({
+        phone: req.user.phone,
+        is_phone: true,
+      });
+    } else if (user.email !== '') {
+      userRes = await this.userRepository.findOneBy({
         email: req.user,
         is_email: true,
       });
+    } else {
+      return {
+        flag: false,
+        status: HttpStatus.BAD_REQUEST,
+        msg: 'User is required',
+      };
     }
 
-    if (!user) {
+    if (!userRes) {
       return {
         flag: false,
         status: HttpStatus.BAD_REQUEST,
@@ -171,16 +188,16 @@ export class UserService {
       throw new UnauthorizedException();
     }
 
-    const payload = { sub: user.id, username: user.phone };
-    const access_token: string = await this.jwtService.signAsync(payload);
+    const payload = { sub: userRes.id, username: userRes.phone };
+    const accessToken: string = await this.jwtService.signAsync(payload);
 
     return {
       flag: true,
       status: HttpStatus.OK,
       msg: 'User is authenticated',
       data: {
-        name: user.name.split(' ')[0],
-        access_token: access_token,
+        name: userRes.name.split(' ')[0],
+        access_token: accessToken,
       },
     };
   }
