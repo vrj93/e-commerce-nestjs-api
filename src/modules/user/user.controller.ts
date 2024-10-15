@@ -9,7 +9,6 @@ import {
   Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from '../../dto/create-user.dto';
 import { VerifyOTPDto } from '../../dto/verify-otp.dto';
 import { LoginDto } from '../../dto/login.dto';
 import { ManageUserDto } from '../../dto/manage-user.dto';
@@ -17,23 +16,49 @@ import { ManageAddressDto } from '../../dto/manage-address.dto';
 import { Response } from 'express';
 import { SearchPhoneDto } from 'src/dto/search-phone.dto';
 import { SearchEmailDto } from 'src/dto/search-email.dto';
+import { CreateAccountDto } from 'src/dto/create-account.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('create-user')
-  async createUser(
-    @Body() createUserReq: CreateUserDto,
+  @Get('search-phone/:phone')
+  async searchPhone(
+    @Param() params: SearchPhoneDto,
     @Res() res: Response,
   ): Promise<any> {
-    const serviceRes = await this.userService.createUser(createUserReq);
+    const serviceRes = await this.userService.searchPhone(params.phone);
+    res
+      .status(serviceRes.flag ? HttpStatus.BAD_REQUEST : HttpStatus.OK)
+      .json(serviceRes);
+  }
+
+  @Get('search-email/:email')
+  async searchEmail(
+    @Param() params: SearchEmailDto,
+    @Res() res: Response,
+  ): Promise<any> {
+    const serviceRes = await this.userService.searchEmail(params.email);
+    res
+      .status(serviceRes.flag ? HttpStatus.BAD_REQUEST : HttpStatus.OK)
+      .json(serviceRes);
+  }
+
+  @Post('create-account')
+  async createAccount(
+    @Body() createAccountReq: CreateAccountDto,
+    @Res() res: Response,
+  ): Promise<any> {
+    const serviceRes = await this.userService.createAccount(createAccountReq);
     res.status(serviceRes.status).json(serviceRes);
   }
 
-  @Put('send-otp/:id')
-  async sendOTP(@Param() params: any, @Res() res: Response): Promise<any> {
-    const serviceRes = await this.userService.sendOTP(params.id);
+  @Put('update-phone-otp/:id')
+  async updatePhoneOTP(
+    @Param() params: any,
+    @Res() res: Response,
+  ): Promise<any> {
+    const serviceRes = await this.userService.updatePhoneOTP(params.id);
     res.status(serviceRes.status).json(serviceRes);
   }
 
@@ -97,27 +122,5 @@ export class UserController {
   ): Promise<any> {
     const serviceRes = await this.userService.getAddressByUser(params.id);
     res.status(serviceRes.status).json(serviceRes);
-  }
-
-  @Get('search-phone/:phone')
-  async searchPhone(
-    @Param() params: SearchPhoneDto,
-    @Res() res: Response,
-  ): Promise<any> {
-    const serviceRes = await this.userService.searchPhone(params.phone);
-    res
-      .status(serviceRes.flag ? HttpStatus.BAD_REQUEST : HttpStatus.OK)
-      .json(serviceRes);
-  }
-
-  @Get('search-email/:email')
-  async searchEmail(
-    @Param() params: SearchEmailDto,
-    @Res() res: Response,
-  ): Promise<any> {
-    const serviceRes = await this.userService.searchEmail(params.email);
-    res
-      .status(serviceRes.flag ? HttpStatus.BAD_REQUEST : HttpStatus.OK)
-      .json(serviceRes);
   }
 }

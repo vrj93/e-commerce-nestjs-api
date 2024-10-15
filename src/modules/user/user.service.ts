@@ -2,10 +2,10 @@ import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../entity/user.entity';
 import { Repository } from 'typeorm';
-import encrypt from '../../utils/encryption';
-import decrypt from '../../utils/decryption';
+import encrypt from './utils/encryption';
+import decrypt from './utils/decryption';
 import { JwtService } from '@nestjs/jwt';
-import sendOTP from '../../utils/sendOTP';
+import sendPhoneOTP from './utils/sendPhoneOTP';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Address } from '../../entity/address.entity';
 
@@ -30,16 +30,14 @@ export class UserService {
     return userObj ? { flag: true } : { flag: false };
   }
 
-  async createUser(req: any): Promise<any> {
-    const otpObj = await sendOTP();
+  async createAccount(req: any): Promise<any> {
+    const otpObj = await sendPhoneOTP();
 
     if (otpObj.message.sid) {
       req.otp = otpObj.code;
-
       const password = req.password;
       delete req.password;
       const encryptObj = await encrypt(password);
-
       req.password = encryptObj.password;
       req.iv_code = encryptObj.iv_code;
 
@@ -60,8 +58,8 @@ export class UserService {
     }
   }
 
-  async sendOTP(id: number): Promise<any> {
-    const otpObj: any = await sendOTP();
+  async updatePhoneOTP(id: number): Promise<any> {
+    const otpObj: any = await sendPhoneOTP();
     if (otpObj.message.sid) {
       await this.userRepository.update(
         { id },
@@ -74,18 +72,13 @@ export class UserService {
         msg: 'OTP sent successfully!',
       };
     } else {
-      return {
-        flag: false,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: 'Something went wrong!',
-      };
+      throw new Error('Failed to send OTP message');
     }
   }
 
   async sendOTPMail(id: number): Promise<any> {
     const randomNum: number = Math.floor(Math.random() * 1000000);
     const code: any = randomNum.toString().padStart(6, '0');
-
     const message = `OTP for Email Verification: ${code}`;
 
     const mailObj = await this.mailService.sendMail({

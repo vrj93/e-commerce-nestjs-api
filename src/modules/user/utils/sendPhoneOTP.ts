@@ -1,14 +1,11 @@
 import twilio from 'twilio';
 
-const sendOTP = async () => {
+const sendPhoneOTP = async () => {
   const accountSid: string = process.env.TWILIO_ACCOUNT_SID;
   const authToken: string = process.env.TWILIO_AUTH_TOKEN;
-
   const client: twilio.Twilio = twilio(accountSid, authToken);
 
-  // Random Six digit code for OTP
   const randomNum: number = Math.floor(Math.random() * 1000000);
-
   // Ensure the number always has 6 digits
   const code: string = randomNum.toString().padStart(6, '0');
 
@@ -24,4 +21,4 @@ const sendOTP = async () => {
   };
 };
 
-export default sendOTP;
+export default sendPhoneOTP;
