@@ -28,7 +28,7 @@ export class ProductService {
         msg: 'Please enter product name',
       };
     }
-    console.log(req);
+
     const productObj = this.productRepository.createQueryBuilder('product');
     productObj
       .leftJoinAndSelect('product.brand', 'brand')
@@ -63,9 +63,10 @@ export class ProductService {
         }),
       );
     }
+
     const selectedCategories = [];
-    console.log(productObj.getSql());
     const products = await productObj.getMany();
+
     for (const product of products) {
       if (product.image) {
         const images = JSON.parse(product.image);
