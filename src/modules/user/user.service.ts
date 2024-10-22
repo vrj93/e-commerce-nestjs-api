@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { generateOTP, sendPhoneOTP } from './utils/processOTP';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Address } from '../../entity/address.entity';
+import { UserResponse } from './interface/user.interface';
 
 @Injectable()
 export class UserService {
@@ -20,16 +21,27 @@ export class UserService {
   ) {}
 
   async searchPhone(phone: any): Promise<any> {
-    const userObj = await this.userRepository.findOneBy({ phone });
+    const userObj = await this.userRepository.findOneBy({
+      phone,
+      is_phone: true,
+    });
     return userObj ? { flag: true } : { flag: false };
   }
 
   async searchEmail(email: any): Promise<any> {
-    const userObj = await this.userRepository.findOneBy({ email });
+    const userObj = await this.userRepository.findOneBy({
+      email,
+      is_email: true,
+    });
     return userObj ? { flag: true } : { flag: false };
   }
 
-  async createAccount(req: any): Promise<any> {
+  async createAccount(req: any): Promise<{
+    flag: boolean;
+    status: number;
+    msg: string;
+    data: UserResponse;
+  }> {
     const otp = generateOTP();
     const otpObj = await sendPhoneOTP(req.phone, otp);
     if (otpObj?.MessageId) {
@@ -40,15 +52,15 @@ export class UserService {
       req.password = encryptObj.password;
       req.iv_code = encryptObj.iv_code;
 
-      await this.userRepository.upsert(req, ['phone']);
+      const user = await this.userRepository.upsert(req, ['phone']);
 
       return {
         flag: true,
         status: HttpStatus.CREATED,
         msg: 'OTP sent successfully',
         data: {
-          id: req.id,
-          name: req.name,
+          id: user.identifiers[0].id,
+          firstName: req.firstName,
           phone: req.phone,
         },
       };
