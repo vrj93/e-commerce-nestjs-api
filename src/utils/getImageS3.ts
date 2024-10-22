@@ -1,6 +1,6 @@
 import { S3 } from 'aws-sdk';
 const getImageS3 = async (images: any): Promise<any> => {
-  const region = process.env.AWS_BUCKET_REGION;
+  const region = process.env.AWS_REGION;
   const accessKey = process.env.AWS_ACCESS_KEY;
   const secretKey = process.env.AWS_SECRET_KEY;
 
