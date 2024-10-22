@@ -2,10 +2,9 @@ import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../entity/user.entity';
 import { Repository } from 'typeorm';
-import encrypt from './utils/encryption';
-import decrypt from './utils/decryption';
+import { encrypt, decrypt } from './utils/processPassword';
 import { JwtService } from '@nestjs/jwt';
-import sendPhoneOTP from './utils/sendPhoneOTP';
+import { generateOTP, sendPhoneOTP } from './utils/processOTP';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Address } from '../../entity/address.entity';
 
@@ -31,10 +30,10 @@ export class UserService {
   }
 
   async createAccount(req: any): Promise<any> {
-    const otpObj = await sendPhoneOTP();
-
-    if (otpObj.message.sid) {
-      req.otp = otpObj.code;
+    const otp = generateOTP();
+    const otpObj = await sendPhoneOTP(req.phone, otp);
+    if (otpObj?.MessageId) {
+      req.otp = otp;
       const password = req.password;
       delete req.password;
       const encryptObj = await encrypt(password);
@@ -59,12 +58,11 @@ export class UserService {
   }
 
   async updatePhoneOTP(id: number): Promise<any> {
-    const otpObj: any = await sendPhoneOTP();
-    if (otpObj.message.sid) {
-      await this.userRepository.update(
-        { id },
-        { otp: otpObj.code, is_phone: false },
-      );
+    const user = await this.userRepository.findOneBy({ id });
+    const otp = generateOTP();
+    const otpObj: any = await sendPhoneOTP(Number(user.phone), otp);
+    if (otpObj?.MessageId) {
+      await this.userRepository.update({ id }, { otp, is_phone: false });
 
       return {
         flag: true,
@@ -104,12 +102,8 @@ export class UserService {
     }
   }
 
-  async verifyOTP(req: any): Promise<any> {
-    const id = req.id;
-    const phone = req.phone;
-    const email = req.email;
-    const reqOTP = req.otp;
-    const user = await this.userRepository.findOneBy({ id });
+  async verifyPhone(req: { id: number; otp: number }): Promise<any> {
+    const user = await this.userRepository.findOneBy({ id: req.id });
 
     if (!user) {
       return {
@@ -121,23 +115,51 @@ export class UserService {
 
     let res: any;
 
-    if (reqOTP == user.otp) {
-      if (phone) {
-        await this.userRepository.update({ id }, { is_phone: true });
-      } else if (email) {
-        await this.userRepository.update({ id }, { is_email: true });
-      }
+    if (req.otp == user.otp) {
+      await this.userRepository.update({ id: req.id }, { is_phone: true });
 
       res = {
         flag: true,
         status: HttpStatus.OK,
-        msg: 'Verified successfully!',
+        msg: 'Phone verified successfully!',
       };
     } else {
       res = {
         flag: false,
         status: HttpStatus.BAD_REQUEST,
-        msg: 'Verification failed!',
+        msg: 'Phone verification failed!',
+      };
+    }
+
+    return res;
+  }
+
+  async verifyEmail(req: { id: number; otp: number }): Promise<any> {
+    const user = await this.userRepository.findOneBy({ id: req.id });
+
+    if (!user) {
+      return {
+        flag: false,
+        status: HttpStatus.NOT_FOUND,
+        message: 'User not found',
+      };
+    }
+
+    let res: any;
+
+    if (req.otp == user.otp) {
+      await this.userRepository.update({ id: req.id }, { is_email: true });
+
+      res = {
+        flag: true,
+        status: HttpStatus.OK,
+        msg: 'Email verified successfully!',
+      };
+    } else {
+      res = {
+        flag: false,
+        status: HttpStatus.BAD_REQUEST,
+        msg: 'Email verification failed!',
       };
     }
 
@@ -146,15 +168,15 @@ export class UserService {
 
   async login(req: any): Promise<any> {
     let userRes;
-    const user: any = req.user;
+    const userReq: any = req.user;
     const reqPassword: string = req.password;
 
-    if (user.phone !== '') {
+    if (userReq.phone) {
       userRes = await this.userRepository.findOneBy({
         phone: req.user.phone,
         is_phone: true,
       });
-    } else if (user.email !== '') {
+    } else if (userReq.email) {
       userRes = await this.userRepository.findOneBy({
         email: req.user,
         is_email: true,
@@ -175,7 +197,9 @@ export class UserService {
       };
     }
 
-    const password = (await decrypt(user.password, user.iv_code)).toString();
+    const password = (
+      await decrypt(userRes.password, userRes.iv_code)
+    ).toString();
 
     if (reqPassword !== password) {
       throw new UnauthorizedException();
@@ -189,7 +213,7 @@ export class UserService {
       status: HttpStatus.OK,
       msg: 'User is authenticated',
       data: {
-        name: userRes.name.split(' ')[0],
+        name: userRes.firstName,
         access_token: accessToken,
       },
     };

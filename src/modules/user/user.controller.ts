@@ -9,7 +9,6 @@ import {
   Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { VerifyOTPDto } from '../../dto/verify-otp.dto';
 import { LoginDto } from '../../dto/login.dto';
 import { ManageUserDto } from '../../dto/manage-user.dto';
 import { ManageAddressDto } from '../../dto/manage-address.dto';
@@ -17,6 +16,7 @@ import { Response } from 'express';
 import { SearchPhoneDto } from 'src/dto/search-phone.dto';
 import { SearchEmailDto } from 'src/dto/search-email.dto';
 import { CreateAccountDto } from 'src/dto/create-account.dto';
+import { VerifyUserDto } from 'src/dto/verify-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -68,12 +68,21 @@ export class UserController {
     res.status(serviceRes.status).json(serviceRes);
   }
 
-  @Post('verify-otp')
-  async verifyOTP(
-    @Body() verifyOTPReq: VerifyOTPDto,
+  @Post('verify-phone')
+  async verifyPhone(
+    @Body() verifyPhoneReq: VerifyUserDto,
     @Res() res: Response,
   ): Promise<any> {
-    const serviceRes = await this.userService.verifyOTP(verifyOTPReq);
+    const serviceRes = await this.userService.verifyPhone(verifyPhoneReq);
+    res.status(serviceRes.status).json(serviceRes);
+  }
+
+  @Post('verify-email')
+  async verifyEmail(
+    @Body() verifyEmailReq: VerifyUserDto,
+    @Res() res: Response,
+  ): Promise<any> {
+    const serviceRes = await this.userService.verifyEmail(verifyEmailReq);
     res.status(serviceRes.status).json(serviceRes);
   }
 
